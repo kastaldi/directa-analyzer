@@ -11,9 +11,6 @@ import {
     Filler
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import zoomPlugin from 'chartjs-plugin-zoom';
-import { Maximize2, RotateCcw } from 'lucide-react';
-
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -22,24 +19,17 @@ ChartJS.register(
     Title,
     Tooltip,
     Legend,
-    Filler,
-    zoomPlugin
+    Filler
 );
 
 export function PerformanceChart({ dailyGains }) {
     const chartRef = useRef(null);
 
-    const handleResetZoom = () => {
-        if (chartRef.current) {
-            chartRef.current.resetZoom();
-        }
-    };
-
     const data = {
         labels: dailyGains.map(day => day.date),
         datasets: [
             {
-                label: 'Cumulative Gain/Loss',
+                label: 'G/L Cumulativo',
                 data: dailyGains.map(day => day.cumulativeGainLoss),
                 borderColor: 'rgb(37, 99, 235)', // blue-600
                 backgroundColor: 'rgba(37, 99, 235, 0.1)',
@@ -51,7 +41,7 @@ export function PerformanceChart({ dailyGains }) {
                 pointHoverRadius: 4,
             },
             {
-                label: 'Cumulative Investments',
+                label: 'Investimenti Cumulativi',
                 data: dailyGains.map(day => day.cumulativeInvestment),
                 borderColor: 'rgb(220, 38, 38)', // red-600
                 borderWidth: 2,
@@ -93,21 +83,6 @@ export function PerformanceChart({ dailyGains }) {
                         family: "'Inter', sans-serif",
                         size: 12
                     }
-                }
-            },
-            zoom: {
-                pan: {
-                    enabled: true,
-                    mode: 'xy'
-                },
-                zoom: {
-                    wheel: {
-                        enabled: true,
-                    },
-                    pinch: {
-                        enabled: true
-                    },
-                    mode: 'xy',
                 }
             },
             tooltip: {
@@ -156,9 +131,12 @@ export function PerformanceChart({ dailyGains }) {
                 position: 'left',
                 title: {
                     display: true,
-                    text: 'Gain/Loss (€)',
+                    text: 'G/L (€)',
                     color: 'rgb(37, 99, 235)',
                     font: { weight: 'bold' }
+                },
+                ticks: {
+                    color: 'rgb(37, 99, 235)'
                 },
                 grid: {
                     color: '#f3f4f6'
@@ -170,9 +148,12 @@ export function PerformanceChart({ dailyGains }) {
                 position: 'right',
                 title: {
                     display: true,
-                    text: 'Investments (€)',
+                    text: 'Investimenti (€)',
                     color: 'rgb(220, 38, 38)',
                     font: { weight: 'bold' }
+                },
+                ticks: {
+                    color: 'rgb(220, 38, 38)'
                 },
                 grid: {
                     drawOnChartArea: false
@@ -181,12 +162,15 @@ export function PerformanceChart({ dailyGains }) {
             y2: {
                 type: 'linear',
                 display: true,
-                position: 'right',
+                position: 'left',
                 title: {
                     display: true,
                     text: 'TWRR (%)',
                     color: 'rgb(147, 51, 234)',
                     font: { weight: 'bold' }
+                },
+                ticks: {
+                    color: 'rgb(147, 51, 234)'
                 },
                 grid: {
                     drawOnChartArea: false
@@ -198,23 +182,11 @@ export function PerformanceChart({ dailyGains }) {
     return (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 animate-in fade-in slide-in-from-bottom-8 duration-700">
             <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Performance Analysis</h3>
-                <div className="flex items-center space-x-2">
-                    <button
-                        onClick={handleResetZoom}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Reset Zoom"
-                    >
-                        <RotateCcw className="w-5 h-5" />
-                    </button>
-                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Analisi Performance</h3>
             </div>
             <div className="h-[500px] w-full">
                 <Line ref={chartRef} data={data} options={options} />
             </div>
-            <p className="text-xs text-gray-400 text-center mt-4">
-                Use mouse wheel to zoom, drag to pan
-            </p>
         </div>
     );
 }

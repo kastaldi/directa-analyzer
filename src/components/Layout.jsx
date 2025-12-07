@@ -13,14 +13,14 @@ export function Layout({ children }) {
                     </div>
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Directa Portfolio Analyzer</h1>
                     <p className="text-gray-500 max-w-2xl mx-auto">
-                        Visualize your Directa investment performance with precision. Upload your CSV to get started.
+                        Visualizza le performance dei tuoi investimenti Directa con precisione. Carica il tuo CSV per iniziare.
                     </p>
                 </header>
                 <main>
                     {children}
                 </main>
                 <footer className="mt-12 text-center text-gray-400 text-sm">
-                    <p>© {new Date().getFullYear()} Directa Analyzer. Open Source Project.</p>
+                    <p>© {new Date().getFullYear()} Directa Analyzer. Progetto Open Source.</p>
                 </footer>
             </div>
         </div>

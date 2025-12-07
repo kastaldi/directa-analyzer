@@ -16,7 +16,7 @@ export function DateRangeFilter({ dateRange, setDateRange, minMaxDates, onReset 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
                 <div className="flex items-center space-x-2 text-gray-900">
                     <Calendar className="w-5 h-5 text-blue-600" />
-                    <h3 className="font-semibold">Analysis Period</h3>
+                    <h3 className="font-semibold">Periodo di Analisi</h3>
                 </div>
                 {isModified && (
                     <button
@@ -24,14 +24,14 @@ export function DateRangeFilter({ dateRange, setDateRange, minMaxDates, onReset 
                         className="flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
                     >
                         <RotateCcw className="w-4 h-4" />
-                        <span>Reset to full range</span>
+                        <span>Reimposta periodo completo</span>
                     </button>
                 )}
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label htmlFor="startDate" className="text-sm font-medium text-gray-500">Start Date</label>
+                    <label htmlFor="startDate" className="text-sm font-medium text-gray-500">Data Inizio</label>
                     <input
                         type="date"
                         id="startDate"
@@ -44,7 +44,7 @@ export function DateRangeFilter({ dateRange, setDateRange, minMaxDates, onReset 
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <label htmlFor="endDate" className="text-sm font-medium text-gray-500">End Date</label>
+                    <label htmlFor="endDate" className="text-sm font-medium text-gray-500">Data Fine</label>
                     <input
                         type="date"
                         id="endDate"

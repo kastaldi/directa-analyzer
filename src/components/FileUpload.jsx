@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Upload, FileText, AlertCircle } from 'lucide-react';
 import { clsx } from 'clsx';
 
-export function FileUpload({ onFileUpload, isLoading, error }) {
+export function FileUpload({ onFileUpload, isLoading, error, hasFile }) {
     const fileInputRef = useRef(null);
 
     const handleFileChange = (e) => {
@@ -27,11 +27,13 @@ export function FileUpload({ onFileUpload, isLoading, error }) {
     };
 
     return (
-        <div className="w-full max-w-2xl mx-auto mb-8">
+        <div className={clsx("w-full mx-auto mb-8 transition-all duration-500", hasFile ? "max-w-lg" : "max-w-2xl")}>
             <div
                 className={clsx(
-                    "relative border-2 border-dashed rounded-2xl p-8 transition-all duration-200 ease-in-out text-center cursor-pointer group",
-                    isLoading ? "bg-gray-50 border-gray-300 cursor-wait" : "bg-white border-gray-300 hover:border-blue-500 hover:bg-blue-50 hover:shadow-md"
+                    "relative border-2 border-dashed rounded-2xl transition-all duration-200 ease-in-out text-center cursor-pointer group",
+                    isLoading ? "bg-gray-50 border-gray-300 cursor-wait p-8" :
+                    hasFile ? "bg-white border-gray-200 hover:border-blue-500 hover:bg-blue-50 p-4" :
+                    "bg-white border-gray-300 hover:border-blue-500 hover:bg-blue-50 hover:shadow-md p-8"
                 )}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
@@ -46,25 +48,28 @@ export function FileUpload({ onFileUpload, isLoading, error }) {
                     disabled={isLoading}
                 />
                 
-                <div className="flex flex-col items-center justify-center space-y-4">
+                <div className={clsx("flex items-center justify-center transition-all duration-200", hasFile ? "flex-row space-x-4" : "flex-col space-y-4")}>
                     <div className={clsx(
-                        "p-4 rounded-full transition-colors duration-200",
-                        isLoading ? "bg-gray-100" : "bg-blue-100 group-hover:bg-blue-200"
+                        "rounded-full transition-colors duration-200",
+                        isLoading ? "bg-gray-100" : "bg-blue-100 group-hover:bg-blue-200",
+                        hasFile ? "p-2" : "p-4"
                     )}>
                         {isLoading ? (
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <div className={clsx("animate-spin rounded-full border-b-2 border-blue-600", hasFile ? "h-4 w-4" : "h-8 w-8")}></div>
                         ) : (
-                            <Upload className="w-8 h-8 text-blue-600" />
+                            <Upload className={clsx("text-blue-600", hasFile ? "w-4 h-4" : "w-8 h-8")} />
                         )}
                     </div>
                     
-                    <div className="space-y-1">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                            {isLoading ? "Processing..." : "Upload your CSV file"}
+                    <div className={clsx("space-y-1", hasFile && "text-left")}>
+                        <h3 className={clsx("font-semibold text-gray-900", hasFile ? "text-sm" : "text-lg")}>
+                            {isLoading ? "Elaborazione..." : hasFile ? "Carica un altro file CSV" : "Carica il tuo file CSV"}
                         </h3>
-                        <p className="text-sm text-gray-500">
-                            Drag and drop or click to browse
-                        </p>
+                        {!hasFile && (
+                            <p className="text-sm text-gray-500">
+                                Trascina e rilascia o clicca per sfogliare
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
@@ -73,7 +78,7 @@ export function FileUpload({ onFileUpload, isLoading, error }) {
                 <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start space-x-3 animate-in fade-in slide-in-from-top-2">
                     <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                     <div>
-                        <h4 className="text-sm font-medium text-red-800">Error processing file</h4>
+                        <h4 className="text-sm font-medium text-red-800">Errore durante l'elaborazione del file</h4>
                         <p className="text-sm text-red-600 mt-1">{error}</p>
                     </div>
                 </div>

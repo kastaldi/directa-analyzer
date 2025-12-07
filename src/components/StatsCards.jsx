@@ -1,8 +1,10 @@
-import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign, Percent, Activity, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendingUp, TrendingDown, DollarSign, Percent, Activity, Wallet, ArrowUpRight, ArrowDownRight, Info } from 'lucide-react';
 import { formatCurrency, formatPercentage, findMaxGainAndLoss } from '../utils/calculations';
 
-function StatCard({ title, value, icon: Icon, trend, subValue, color = "blue" }) {
+function StatCard({ title, value, icon: Icon, trend, subValue, color = "blue", info }) {
+    const [showInfo, setShowInfo] = useState(false);
+
     const colorClasses = {
         blue: "bg-blue-50 text-blue-600",
         green: "bg-green-50 text-green-600",
@@ -26,7 +28,25 @@ function StatCard({ title, value, icon: Icon, trend, subValue, color = "blue" })
                 )}
             </div>
             <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
+                <div className="flex items-center gap-2 mb-1">
+                    <p className="text-sm font-medium text-gray-500">{title}</p>
+                    {info && (
+                        <div
+                            className="relative"
+                            onMouseEnter={() => setShowInfo(true)}
+                            onMouseLeave={() => setShowInfo(false)}
+                            onClick={() => setShowInfo(!showInfo)}
+                        >
+                            <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help" />
+                            {showInfo && (
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl z-50 font-normal">
+                                    {info}
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
                 <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
                 {subValue && (
                     <p className="text-sm text-gray-400 mt-1">{subValue}</p>
@@ -44,40 +64,45 @@ export function StatsCards({ stats }) {
             {/* Primary Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                 <StatCard
-                    title="Total Gain/Loss"
+                    title="Patrimonio Iniziale"
+                    value={formatCurrency(stats.patrimonyInitial)}
+                    icon={Wallet}
+                    color="teal"
+                />
+                <StatCard
+                    title="Movimenti Totali"
+                    value={formatCurrency(stats.totalMovements)}
+                    icon={DollarSign}
+                    color="orange"
+                    info="Somma netta di tutti i versamenti (positivi) e prelievi (negativi) effettuati nel periodo."
+                />
+                <StatCard
+                    title="G/L Totale"
                     value={formatCurrency(stats.totalGainLoss)}
                     icon={stats.totalGainLoss >= 0 ? TrendingUp : TrendingDown}
                     color={stats.totalGainLoss >= 0 ? "green" : "red"}
+                    info="Guadagno o perdita totale in euro. Calcolato sommando le variazioni giornaliere del portafoglio, escludendo l'impatto di versamenti e prelievi."
                 />
                 <StatCard
-                    title="Gain/Loss %"
+                    title="G/L %"
                     value={formatPercentage(stats.totalGainLossPercentage)}
                     icon={Percent}
                     color="blue"
+                    info="Rendimento percentuale Money-Weighted (MWRR). Rappresenta la redditività del capitale mediamente investito, considerando l'impatto temporale di versamenti e prelievi."
                 />
                 <StatCard
                     title="TWRR"
                     value={formatPercentage(stats.totalTwrr)}
                     icon={Activity}
                     color="purple"
+                    info="Time-Weighted Rate of Return. Misura la performance della gestione eliminando l'effetto dei flussi di cassa (versamenti/prelievi). Ideale per confrontare la strategia con il mercato."
                 />
                 <StatCard
-                    title="Total Movements"
-                    value={formatCurrency(stats.totalMovements)}
-                    icon={DollarSign}
-                    color="orange"
-                />
-                <StatCard
-                    title="Initial Patrimony"
-                    value={formatCurrency(stats.patrimonyInitial)}
-                    icon={Wallet}
-                    color="teal"
-                />
-                <StatCard
-                    title="Final Patrimony"
+                    title="Patrimonio Finale"
                     value={formatCurrency(stats.patrimonyFinal)}
                     icon={Wallet}
                     color="blue"
+                    info="Valore complessivo del portafoglio al termine del periodo selezionato. Somma dei movimenti totali e del guadagno/perdita totale."
                 />
             </div>
 
@@ -86,7 +111,7 @@ export function StatsCards({ stats }) {
                 <div className="bg-green-50/50 p-6 rounded-2xl border border-green-100">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm font-medium text-green-800 mb-1">Best Day Performance</p>
+                            <p className="text-sm font-medium text-green-800 mb-1">Miglior Performance Giornaliera</p>
                             <h4 className="text-xl font-bold text-green-900">{formatCurrency(maxGain.gainLoss)}</h4>
                             <p className="text-sm text-green-600 mt-1">{maxGain.date}</p>
                         </div>
@@ -99,7 +124,7 @@ export function StatsCards({ stats }) {
                 <div className="bg-red-50/50 p-6 rounded-2xl border border-red-100">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm font-medium text-red-800 mb-1">Worst Day Performance</p>
+                            <p className="text-sm font-medium text-red-800 mb-1">Peggior Performance Giornaliera</p>
                             <h4 className="text-xl font-bold text-red-900">{formatCurrency(maxLoss.gainLoss)}</h4>
                             <p className="text-sm text-red-600 mt-1">{maxLoss.date}</p>
                         </div>

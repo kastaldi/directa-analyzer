@@ -25,6 +25,7 @@ function App() {
                 onFileUpload={handleFileUpload}
                 isLoading={isLoading}
                 error={error}
+                hasFile={!!analysisResults}
             />
 
             {analysisResults && (
