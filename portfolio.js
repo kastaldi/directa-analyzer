@@ -100,8 +100,14 @@ function calculateStats(portfolioData, alignedMovements) {
     const dailyGains = [];
 
     let previousPatrimonio = null;
+    let weightedAverageCapital = 0;
+    const totalDays = portfolioData.length;
 
-    portfolioData.forEach((day) => {
+    if (totalDays > 0) {
+        weightedAverageCapital = portfolioData[0].patrimonio;
+    }
+
+    portfolioData.forEach((day, index) => {
         // Aggiorna il cumulativo degli investimenti per il giorno corrente
         const movimentiGiorno = alignedMovements
             .filter(m => m.date === day.date)
@@ -114,6 +120,13 @@ function calculateStats(portfolioData, alignedMovements) {
             const gainLoss = diffPatrimonio - movimentiGiorno;
             cumulativeGainLoss += gainLoss;
 
+            // Calcolo capitale medio ponderato (Modified Dietz)
+            if (totalDays > 1) {
+                const daysRemaining = (totalDays - 1) - index;
+                const weight = daysRemaining / (totalDays - 1);
+                weightedAverageCapital += movimentiGiorno * weight;
+            }
+
             dailyGains.push({
                 date: day.date,
                 gainLoss: gainLoss,
@@ -124,9 +137,15 @@ function calculateStats(portfolioData, alignedMovements) {
         previousPatrimonio = day.patrimonio;
     });
 
+    let totalGainLossPercentage = 0;
+    if (weightedAverageCapital !== 0) {
+        totalGainLossPercentage = cumulativeGainLoss / weightedAverageCapital;
+    }
+
     return {
         dailyGains,
         totalGainLoss: cumulativeGainLoss,
+        totalGainLossPercentage,
         totalInvestments: cumulativeInvestment,
         patrimonyInitial: portfolioData[0].patrimonio,
         patrimonyFinal: portfolioData[portfolioData.length - 1].patrimonio,
@@ -234,6 +253,9 @@ function updateChart(dailyGains) {
                     },
                     grid: {
                         color: 'rgba(200, 200, 200, 0.2)'
+                    },
+                    ticks: {
+                        color: 'rgb(75, 192, 192)'
                     }
                 },
                 y1: {
@@ -247,6 +269,9 @@ function updateChart(dailyGains) {
                     },
                     grid: {
                         drawOnChartArea: false
+                    },
+                    ticks: {
+                        color: 'rgb(255, 99, 132)'
                     }
                 },
                 x: {
@@ -264,6 +289,7 @@ function displayResults(stats) {
     $('#patrimonyFinal').text(formatCurrency(stats.patrimonyFinal));
     $('#totalMovements').text(formatCurrency(stats.totalMovements));
     $('#totalGainLoss').text(formatCurrency(stats.totalGainLoss));
+    $('#totalGainLossPercentage').text(formatPercentage(stats.totalGainLossPercentage));
 
         // Trova il giorno con il massimo gain e il massimo loss
     const { maxGain, maxLoss } = findMaxGainAndLoss(stats.dailyGains);
@@ -386,6 +412,14 @@ function formatCurrency(value) {
     return new Intl.NumberFormat('it-IT', {
         style: 'currency',
         currency: 'EUR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(value);
+}
+
+function formatPercentage(value) {
+    return new Intl.NumberFormat('it-IT', {
+        style: 'percent',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(value);
