@@ -188,6 +188,56 @@ export function findMaxGainAndLoss(dailyGains) {
     };
 }
 
+export function findLongestSequences(dailyGains) {
+    let currentDropSequence = { start: null, end: null, sum: 0, days: 0 };
+    let maxDropSequence = { start: null, end: null, sum: 0, days: 0 };
+
+    let currentRiseSequence = { start: null, end: null, sum: 0, days: 0 };
+    let maxRiseSequence = { start: null, end: null, sum: 0, days: 0 };
+
+    dailyGains.forEach((day) => {
+        // Drop sequence (gainLoss <= 0)
+        if (day.gainLoss <= 0) {
+            if (currentDropSequence.days === 0) {
+                currentDropSequence.start = day.date;
+            }
+            currentDropSequence.end = day.date;
+            currentDropSequence.sum += day.gainLoss;
+            currentDropSequence.days++;
+        } else {
+            if (currentDropSequence.sum < maxDropSequence.sum) { // Lower sum is "larger" drop (more negative)
+                maxDropSequence = { ...currentDropSequence };
+            }
+            currentDropSequence = { start: null, end: null, sum: 0, days: 0 };
+        }
+
+        // Rise sequence (gainLoss >= 0)
+        if (day.gainLoss >= 0) {
+            if (currentRiseSequence.days === 0) {
+                currentRiseSequence.start = day.date;
+            }
+            currentRiseSequence.end = day.date;
+            currentRiseSequence.sum += day.gainLoss;
+            currentRiseSequence.days++;
+        } else {
+            if (currentRiseSequence.sum > maxRiseSequence.sum) {
+                maxRiseSequence = { ...currentRiseSequence };
+            }
+            currentRiseSequence = { start: null, end: null, sum: 0, days: 0 };
+        }
+    });
+
+    // Check last sequences
+    if (currentDropSequence.sum < maxDropSequence.sum) {
+        maxDropSequence = { ...currentDropSequence };
+    }
+    if (currentRiseSequence.sum > maxRiseSequence.sum) {
+        maxRiseSequence = { ...currentRiseSequence };
+    }
+
+    return { maxDropSequence, maxRiseSequence };
+}
+
 export function formatCurrency(value) {
     return new Intl.NumberFormat('it-IT', {
         style: 'currency',

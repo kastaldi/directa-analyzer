@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { TrendingUp, TrendingDown, DollarSign, Percent, Activity, Wallet, ArrowUpRight, ArrowDownRight, Info } from 'lucide-react';
-import { formatCurrency, formatPercentage, findMaxGainAndLoss } from '../utils/calculations';
+import { TrendingUp, TrendingDown, DollarSign, Percent, Activity, Wallet, ArrowUpRight, ArrowDownRight, Info, Mountain, Skull } from 'lucide-react';
+import { formatCurrency, formatPercentage, findMaxGainAndLoss, findLongestSequences } from '../utils/calculations';
 
 function StatCard({ title, value, icon: Icon, trend, subValue, color = "blue", info }) {
     const [showInfo, setShowInfo] = useState(false);
@@ -58,6 +58,7 @@ function StatCard({ title, value, icon: Icon, trend, subValue, color = "blue", i
 
 export function StatsCards({ stats }) {
     const { maxGain, maxLoss } = findMaxGainAndLoss(stats.dailyGains);
+    const { maxRiseSequence, maxDropSequence } = findLongestSequences(stats.dailyGains);
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-500">
@@ -107,7 +108,7 @@ export function StatsCards({ stats }) {
             </div>
 
             {/* Secondary Stats (Max Gain/Loss) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="bg-green-50/50 p-6 rounded-2xl border border-green-100">
                     <div className="flex items-center justify-between">
                         <div>
@@ -130,6 +131,32 @@ export function StatsCards({ stats }) {
                         </div>
                         <div className="bg-white p-3 rounded-xl shadow-sm">
                             <TrendingDown className="w-6 h-6 text-red-600" />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-green-50/50 p-6 rounded-2xl border border-green-100">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-green-800 mb-1">Miglior salita ininterrotta</p>
+                            <h4 className="text-xl font-bold text-green-900">{formatCurrency(maxRiseSequence.sum)}</h4>
+                            <p className="text-sm text-green-600 mt-1">{maxRiseSequence.start} - {maxRiseSequence.end} ({maxRiseSequence.days} gg)</p>
+                        </div>
+                        <div className="bg-white p-3 rounded-xl shadow-sm">
+                            <Mountain className="w-6 h-6 text-green-600" />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-orange-50/50 p-6 rounded-2xl border border-orange-100">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-orange-800 mb-1">Peggior calo ininterrotto</p>
+                            <h4 className="text-xl font-bold text-orange-900">{formatCurrency(maxDropSequence.sum)}</h4>
+                            <p className="text-sm text-orange-600 mt-1">{maxDropSequence.start} - {maxDropSequence.end} ({maxDropSequence.days} gg)</p>
+                        </div>
+                        <div className="bg-white p-3 rounded-xl shadow-sm">
+                            <Skull className="w-6 h-6 text-orange-600" />
                         </div>
                     </div>
                 </div>
