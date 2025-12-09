@@ -72,7 +72,7 @@ export function StatsCards({ stats }) {
                     color="teal"
                 />
                 <StatCard
-                    title="Movimenti Totali"
+                    title="Movimenti Cumulativi"
                     value={formatCurrency(stats.totalMovements)}
                     icon={DollarSign}
                     color="orange"
@@ -114,7 +114,7 @@ export function StatsCards({ stats }) {
                     }
                 />
                 <StatCard
-                    title="Patrimonio Finale"
+                    title="Patrimonio Totale"
                     value={formatCurrency(stats.patrimonyFinal)}
                     icon={Wallet}
                     color="blue"

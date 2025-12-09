@@ -41,9 +41,9 @@ export function PerformanceChart({ dailyGains }) {
                 pointHoverRadius: 4,
             },
             {
-                label: 'Investimenti Cumulativi',
+                label: 'Movimenti Cumulativi',
                 data: dailyGains.map(day => day.cumulativeInvestment),
-                borderColor: 'rgb(220, 38, 38)', // red-600
+                borderColor: 'rgb(248, 113, 113)', // red-400
                 borderWidth: 2,
                 borderDash: [5, 5],
                 tension: 0.1,
@@ -52,9 +52,9 @@ export function PerformanceChart({ dailyGains }) {
                 pointHoverRadius: 4,
             },
             {
-                label: 'Valore Totale',
+                label: 'Patrimonio Totale',
                 data: dailyGains.map(day => day.totalValue),
-                borderColor: 'rgb(16, 185, 129)', // emerald-500
+                borderColor: 'rgb(220, 38, 38)', // red-600
                 borderWidth: 2,
                 tension: 0.1,
                 yAxisID: 'y1',
@@ -84,7 +84,7 @@ export function PerformanceChart({ dailyGains }) {
         plugins: {
             legend: {
                 position: 'top',
-                align: 'end',
+                align: 'center',
                 labels: {
                     usePointStyle: true,
                     boxWidth: 8,
@@ -158,12 +158,12 @@ export function PerformanceChart({ dailyGains }) {
                 position: 'right',
                 title: {
                     display: true,
-                    text: 'Investimenti / Totale (€)',
-                    color: 'rgb(75, 85, 99)', // gray-600
+                    text: 'Investimenti / Patrimonio (€)',
+                    color: 'rgb(220, 38, 38)', // red-600
                     font: { weight: 'bold' }
                 },
                 ticks: {
-                    color: 'rgb(75, 85, 99)' // gray-600
+                    color: 'rgb(220, 38, 38)' // red-600
                 },
                 grid: {
                     drawOnChartArea: false
@@ -191,8 +191,13 @@ export function PerformanceChart({ dailyGains }) {
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-2">
                 <h3 className="text-lg font-semibold text-gray-900">Analisi Performance</h3>
+            </div>
+            <div className="text-center mb-0">
+                <span className="text-xs text-gray-400">
+                    Cliccare gli elementi della legenda per nascondere
+                </span>
             </div>
             <div className="h-[500px] w-full">
                 <Line ref={chartRef} data={data} options={options} />
