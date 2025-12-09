@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, TrendingDown, DollarSign, Percent, Activity, Wallet, ArrowUpRight, ArrowDownRight, Info, Mountain, Skull, Timer } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Percent, Activity, Wallet, ArrowUpRight, ArrowDownRight, Info, Mountain, Skull, Timer, BarChart3 } from 'lucide-react';
 import { formatCurrency, formatPercentage, findMaxGainAndLoss, findLongestSequences, calculateLongestRecovery } from '../utils/calculations';
 
 function StatCard({ title, value, icon: Icon, trend, subValue, color = "blue", info }) {
@@ -64,7 +64,7 @@ export function StatsCards({ stats }) {
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-500">
             {/* Primary Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 <StatCard
                     title="Patrimonio Iniziale"
                     value={formatCurrency(stats.patrimonyInitial)}
@@ -98,6 +98,20 @@ export function StatsCards({ stats }) {
                     icon={Activity}
                     color="purple"
                     info="Time-Weighted Rate of Return. Misura la performance della gestione eliminando l'effetto dei flussi di cassa (versamenti/prelievi). Ideale per confrontare la strategia con il mercato."
+                />
+                <StatCard
+                    title="CAGR"
+                    value={stats.cagr !== null ? formatPercentage(stats.cagr) : "-"}
+                    icon={BarChart3}
+                    color="teal"
+                    info={stats.cagr !== null
+                        ? <>
+                            <p className="font-bold mb-1">CAGR (Compound Annual Growth Rate)</p>
+                            <p className="mb-2">Misura il tasso di crescita annualizzato del portafoglio, calcolato a partire dal TWRR totale nel periodo selezionato. Permette di confrontare la performance su base annua indipendentemente dalla durata dell’analisi e dai flussi di cassa.</p>
+                            <p className="font-mono text-[10px]">Formula: CAGR = (1 + TWRR_periodo)^(12/mesi) - 1</p>
+                          </>
+                        : "La durata del periodo selezionato non è sufficiente per calcolare un CAGR significativo."
+                    }
                 />
                 <StatCard
                     title="Patrimonio Finale"

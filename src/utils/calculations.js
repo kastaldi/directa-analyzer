@@ -151,11 +151,25 @@ export function calculateStats(portfolioData, alignedMovements) {
         totalGainLossPercentage = cumulativeGainLoss / weightedAverageCapital;
     }
 
+    let cagr = null;
+    if (totalDays > 0) {
+        const startDate = new Date(portfolioData[0].date.split('/').reverse().join('-'));
+        const endDate = new Date(portfolioData[portfolioData.length - 1].date.split('/').reverse().join('-'));
+        const diffTime = Math.abs(endDate - startDate);
+        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+        const monthsInPeriod = diffDays / 30.4375;
+
+        if (monthsInPeriod >= 1) {
+            cagr = Math.pow(cumulativeTWRR, 12 / monthsInPeriod) - 1;
+        }
+    }
+
     return {
         dailyGains,
         totalGainLoss: cumulativeGainLoss,
         totalGainLossPercentage,
         totalTwrr: cumulativeTWRR - 1,
+        cagr,
         totalInvestments: cumulativeInvestment,
         patrimonyInitial: portfolioData[0].patrimonio,
         patrimonyFinal: portfolioData[portfolioData.length - 1].patrimonio,
