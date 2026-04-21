@@ -107,27 +107,6 @@ export function DateRangeFilter({ dateRange, setDateRange, minMaxDates, onReset 
                     />
                 </div>
             </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-                    {Object.entries(predefinedRanges).map(([label, range]) => (
-                        <button
-                            key={label}
-                            onClick={() => applyPredefinedRange(range)}
-                            className="px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 hover:border-blue-300"
-                        >
-                            {label}
-                        </button>
-                    ))}
-                    {availableYears.map((year) => (
-                        <button
-                            key={year}
-                            onClick={() => applyYearRange(year)}
-                            className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 hover:border-gray-300"
-                        >
-                            {year}
-                        </button>
-                    ))}
-                </div>
         </div>
     );
 }

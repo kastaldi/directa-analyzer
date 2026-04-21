@@ -22,12 +22,47 @@ ChartJS.register(
     Filler
 );
 
-export function PerformanceChart({ dailyGains }) {
+export function PerformanceChart({ dailyGains, hiddenDatasets, setHiddenDatasets }) {
     const chartRef = useRef(null);
+
+    // Dataset indices in the new order:
+    // 0: TWRR
+    // 1: G/L
+    // 2: Movimenti
+    // 3: Patrimonio
+    const isTwrrHidden = hiddenDatasets.includes(0);
+    const isGlHidden = hiddenDatasets.includes(1);
+    const isMovimentiHidden = hiddenDatasets.includes(2);
+    const isPatrimonioHidden = hiddenDatasets.includes(3);
+
+    // Determine Y1 axis title and visibility
+    let y1Title = 'Movimenti / Patrimonio (€)';
+    if (isMovimentiHidden && !isPatrimonioHidden) {
+        y1Title = 'Patrimonio (€)';
+    } else if (!isMovimentiHidden && isPatrimonioHidden) {
+        y1Title = 'Movimenti (€)';
+    }
+    const showY1 = !(isMovimentiHidden && isPatrimonioHidden);
+
+    // Calculate padding to keep the grid start fixed (max left width = 80 + 50 = 130)
+    const leftAxesWidth = (isGlHidden ? 0 : 80) + (isTwrrHidden ? 0 : 50);
+    const maxLeftWidth = 130;
+    const paddingLeft = maxLeftWidth - leftAxesWidth;
 
     const data = {
         labels: dailyGains.map(day => day.date),
         datasets: [
+            {
+                label: 'TWRR (%)',
+                data: dailyGains.map(day => day.twrr * 100),
+                borderColor: 'rgb(147, 51, 234)', // purple-600
+                borderWidth: 2,
+                tension: 0.1,
+                yAxisID: 'y2',
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                hidden: isTwrrHidden,
+            },
             {
                 label: 'G/L Cumulativo',
                 data: dailyGains.map(day => day.cumulativeGainLoss),
@@ -39,6 +74,7 @@ export function PerformanceChart({ dailyGains }) {
                 yAxisID: 'y',
                 pointRadius: 0,
                 pointHoverRadius: 4,
+                hidden: isGlHidden,
             },
             {
                 label: 'Movimenti Cumulativi',
@@ -50,6 +86,7 @@ export function PerformanceChart({ dailyGains }) {
                 yAxisID: 'y1',
                 pointRadius: 0,
                 pointHoverRadius: 4,
+                hidden: isMovimentiHidden,
             },
             {
                 label: 'Patrimonio Totale',
@@ -60,16 +97,7 @@ export function PerformanceChart({ dailyGains }) {
                 yAxisID: 'y1',
                 pointRadius: 0,
                 pointHoverRadius: 4,
-            },
-            {
-                label: 'TWRR (%)',
-                data: dailyGains.map(day => day.twrr * 100),
-                borderColor: 'rgb(147, 51, 234)', // purple-600
-                borderWidth: 2,
-                tension: 0.1,
-                yAxisID: 'y2',
-                pointRadius: 0,
-                pointHoverRadius: 4,
+                hidden: isPatrimonioHidden,
             }
         ]
     };
@@ -77,6 +105,12 @@ export function PerformanceChart({ dailyGains }) {
     const options = {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+            padding: {
+                left: paddingLeft,
+                right: 0
+            }
+        },
         interaction: {
             mode: 'index',
             intersect: false,
@@ -85,6 +119,15 @@ export function PerformanceChart({ dailyGains }) {
             legend: {
                 position: 'top',
                 align: 'center',
+                onClick: (e, legendItem) => {
+                    const index = legendItem.datasetIndex;
+                    setHiddenDatasets(prev => {
+                        if (prev.includes(index)) {
+                            return prev.filter(i => i !== index);
+                        }
+                        return [...prev, index];
+                    });
+                },
                 labels: {
                     usePointStyle: true,
                     boxWidth: 8,
@@ -137,7 +180,7 @@ export function PerformanceChart({ dailyGains }) {
             },
             y: {
                 type: 'linear',
-                display: true,
+                display: !isGlHidden,
                 position: 'left',
                 title: {
                     display: true,
@@ -150,15 +193,18 @@ export function PerformanceChart({ dailyGains }) {
                 },
                 grid: {
                     color: '#f3f4f6'
+                },
+                afterFit: (axis) => {
+                    axis.width = 80;
                 }
             },
             y1: {
                 type: 'linear',
-                display: true,
+                display: showY1,
                 position: 'right',
                 title: {
                     display: true,
-                    text: 'Investimenti / Patrimonio (€)',
+                    text: y1Title,
                     color: 'rgb(220, 38, 38)', // red-600
                     font: { weight: 'bold' }
                 },
@@ -167,11 +213,14 @@ export function PerformanceChart({ dailyGains }) {
                 },
                 grid: {
                     drawOnChartArea: false
+                },
+                afterFit: (axis) => {
+                    axis.width = 80;
                 }
             },
             y2: {
                 type: 'linear',
-                display: true,
+                display: !isTwrrHidden,
                 position: 'left',
                 title: {
                     display: true,
@@ -184,6 +233,9 @@ export function PerformanceChart({ dailyGains }) {
                 },
                 grid: {
                     drawOnChartArea: false
+                },
+                afterFit: (axis) => {
+                    axis.width = 50;
                 }
             }
         }
